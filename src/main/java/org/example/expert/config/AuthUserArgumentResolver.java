@@ -12,6 +12,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+/*
+JwtFilter가 request에 user 정보 저장
+-> ArgumentResolver가 request에서 꺼내고
+-> AuthUser 객체로 변환
+-> Controller 파라미터에 자동 주입
+ */
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override

@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtFilter implements Filter {
+public class JwtFilter implements Filter {  // 인증 및 1차 인가 담당
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
@@ -31,11 +31,12 @@ public class JwtFilter implements Filter {
 
         String url = httpRequest.getRequestURI();
 
-        if (url.startsWith("/auth")) {
+        if (url.startsWith("/auth")) {  // 1단계 : 로그인 및 회원 가입은 필터 통과
             chain.doFilter(request, response);
             return;
         }
 
+        // 2단계 Authorization 헤더 검사
         String bearerJwt = httpRequest.getHeader("Authorization");
 
         if (bearerJwt == null) {
@@ -44,6 +45,7 @@ public class JwtFilter implements Filter {
             return;
         }
 
+        // 3단계 : 토큰 파싱  & 검증
         String jwt = jwtUtil.substringToken(bearerJwt);
 
         try {
@@ -57,10 +59,14 @@ public class JwtFilter implements Filter {
 
             UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
 
+            // 4단계 : request에 사용자 정보 저장.
+            // Spring Security의 SecurityContext 대신 request attribute를 사용해서 사용자 정보 전달
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
             httpRequest.setAttribute("email", claims.get("email"));
             httpRequest.setAttribute("userRole", claims.get("userRole"));
 
+            // 5단계 : 관리자 권한 체크. URL 기반 Role 체크.
+            // /admin/** 은 ADMIN만 접근 가능. 그 외에는 인증만 필요.(인가X)
             if (url.startsWith("/admin") && !UserRole.ADMIN.equals(userRole)) {
                 log.warn("권한 부족: userId={}, role={}, URI={}", claims.getSubject(), userRole, url);
                 sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "접근 권한이 없습니다.");

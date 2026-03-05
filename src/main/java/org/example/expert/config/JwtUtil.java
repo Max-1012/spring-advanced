@@ -18,7 +18,7 @@ import java.util.Date;
 
 @Slf4j(topic = "JwtUtil")
 @Component
-public class JwtUtil {
+public class JwtUtil { // 토큰 생성과 파싱 담당
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
