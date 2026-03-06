@@ -72,3 +72,8 @@ AOP를 활용하여 /admin/* 경로로 들어오는 요청에는
 RequestContextHolder에서 받아온 request에서 id와 url을, joinPoint를 사용해 요청 본문을,
 
 메서드 실행 결과에서 응답 본문을 각각 받아와서 로그를 남겨주었습니다.
+
+CommentDelete 요청 시 로그
+<img src="images/CommentDeleteRequestLog.png">
+UserRole 변경 요청 시 로그
+<img src="images/UserRoleUpdateRequestLog.png">
